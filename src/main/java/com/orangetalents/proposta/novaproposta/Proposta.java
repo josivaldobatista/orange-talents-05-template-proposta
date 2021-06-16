@@ -3,19 +3,24 @@ package com.orangetalents.proposta.novaproposta;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import com.orangetalents.proposta.associacartaoproposta.Cartao;
 import com.orangetalents.proposta.novaproposta.endereco.Endereco;
+
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "tb_proposta")
@@ -34,6 +39,10 @@ public class Proposta {
   private @Positive @NotNull BigDecimal salario;
 
   private @Enumerated Status status;
+
+  @Nullable
+  @OneToOne(mappedBy = "proposta", cascade = CascadeType.MERGE)
+  private Cartao cartao;
 
   @Deprecated
   public Proposta() {
@@ -61,6 +70,10 @@ public class Proposta {
 
   public String getNome() {
     return nome;
+  }
+
+  public void setCartao(Cartao cartao) {
+    this.cartao = cartao;
   }
 
 }

@@ -14,7 +14,7 @@ import feign.FeignException;
 public class ConsultaRestricao {
 
   @Autowired
-  private ConsultaSolicitante consultaDadosSolicitante;
+  private IConsultaSolicitante consultaDadosSolicitante;
 
   public void consulta(Proposta proposta) throws JsonProcessingException {
     SolicitanteForm solicitanteForm = new SolicitanteForm(proposta);
