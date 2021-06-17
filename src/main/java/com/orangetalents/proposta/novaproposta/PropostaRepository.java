@@ -14,4 +14,6 @@ public interface PropostaRepository extends JpaRepository<Proposta, UUID> {
 
   Optional<Proposta> findByDocumento(String documento);
 
+  Optional<Proposta> findByUuid(String uuid);
+
 }

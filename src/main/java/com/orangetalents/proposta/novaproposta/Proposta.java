@@ -28,7 +28,9 @@ public class Proposta {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
+  private Long id;
+
+  private String uuid = UUID.randomUUID().toString();
 
   private @NotBlank String nome;
   private @NotBlank @Email String email;
@@ -60,8 +62,12 @@ public class Proposta {
     this.status = status;
   }
 
-  public UUID getId() {
+  public Long getId() {
     return id;
+  }
+
+  public String getUuid() {
+    return uuid;
   }
 
   public String getDocumento() {
@@ -74,6 +80,26 @@ public class Proposta {
 
   public void setCartao(Cartao cartao) {
     this.cartao = cartao;
+  }
+
+  public String getEmail() {
+    return this.email;
+  }
+
+  public Endereco getEndereco() {
+    return this.endereco;
+  }
+
+  public BigDecimal getSalario() {
+    return this.salario;
+  }
+
+  public Status getStatus() {
+    return this.status;
+  }
+
+  public Cartao getCartao() {
+    return this.cartao;
   }
 
 }
