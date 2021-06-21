@@ -34,6 +34,33 @@ services:
       POSTGRES_DB: keycloak
       POSTGRES_HOST: postgres
 
+  postgreslocal:
+    image: 'postgres:alpine'
+    volumes:
+      - postgres-volume-local:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: proposta_db
+      POSTGRES_HOST: postgres
+
+  proposta:
+    container_name: proposta
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: valdo/proposta
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgreslocal:5432/proposta_db
+    depends_on:
+      - "postgreslocal"
+      - "keycloak"
+      - "vault"
+    ports:
+      - 8080:8080
+
   keycloak:
     image: jboss/keycloak
     ports:
@@ -138,3 +165,4 @@ volumes:
   grafana-volume:
   prometheus-volume:
   postgres-volume:
+  postgres-volume-local:
