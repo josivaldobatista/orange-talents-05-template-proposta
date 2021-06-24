@@ -23,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping(value = "/propostas")
+@RequestMapping(value = "/api/propostas")
 public class PropostaController {
 
   @Autowired

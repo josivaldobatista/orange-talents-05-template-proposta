@@ -34,18 +34,6 @@ services:
       POSTGRES_DB: keycloak
       POSTGRES_HOST: postgres
 
-  postgreslocal:
-    image: 'postgres:alpine'
-    volumes:
-      - postgres-volume-local:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: proposta_db
-      POSTGRES_HOST: postgres
-
   proposta:
     container_name: proposta
     build:
@@ -54,8 +42,10 @@ services:
     image: valdo/proposta
     environment:
       DATABASE_URL: jdbc:postgresql://postgreslocal:5432/proposta_db
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/auth/realms/nosso-cartao
+      KEYCLOAK_JWKS_URI: http://keycloak:8080/auth/realms/nosso-cartao/protocol/openid-connect/certs
     depends_on:
-      - "postgreslocal"
+      - "postgres"
       - "keycloak"
       - "vault"
     ports:
