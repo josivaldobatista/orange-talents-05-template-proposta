@@ -34,13 +34,13 @@ public class BloqueioCartao {
   private String userAgent;
 
   @NotNull
-  private Long idCartao;
+  private String idCartao;
 
   @Deprecated
   public BloqueioCartao() {
   }
 
-  public BloqueioCartao(String ipCliente, String userAgent, Long idCartao) {
+  public BloqueioCartao(String ipCliente, String userAgent, String idCartao) {
     this.ipCliente = ipCliente;
     this.userAgent = userAgent;
     this.idCartao = idCartao;

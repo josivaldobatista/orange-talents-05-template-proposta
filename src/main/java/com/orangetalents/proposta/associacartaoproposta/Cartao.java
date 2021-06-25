@@ -2,7 +2,6 @@ package com.orangetalents.proposta.associacartaoproposta;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,7 +24,7 @@ public class Cartao {
   private Long id;
 
   @NotNull
-  private String uuid = UUID.randomUUID().toString();
+  private String idCartao;
 
   @NotNull
   private LocalDateTime emitidoEm;
@@ -42,9 +41,9 @@ public class Cartao {
   @JsonProperty
   private Boolean bloqueado = false;
 
-  public Cartao(String uuid, LocalDateTime emitidoEm, String titular, BigDecimal limite, 
+  public Cartao(String idCartao, LocalDateTime emitidoEm, String titular, BigDecimal limite, 
       Proposta proposta) {
-    this.uuid = uuid;
+    this.idCartao = idCartao;
     this.emitidoEm = emitidoEm;
     this.titular = titular;
     this.limite = limite;
@@ -55,8 +54,8 @@ public class Cartao {
   public Cartao() {
   }
 
-  public String getUuid() {
-    return uuid;
+  public String getIdCartao() {
+    return idCartao;
   }
 
   public LocalDateTime getEmitidoEm() {

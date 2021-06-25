@@ -52,7 +52,7 @@ public class BloqueioCartaoController {
 
     cartaoRepository.save(cartao.get());
 
-    BloqueioCartao bloqueioCartao = new BloqueioCartao(ipCliente, userAgent, idCartao);
+    BloqueioCartao bloqueioCartao = new BloqueioCartao(ipCliente, userAgent, cartao.get().getIdCartao());
     bloqueioCartaoRepository.save(bloqueioCartao);
 
     return ResponseEntity.ok().build();
