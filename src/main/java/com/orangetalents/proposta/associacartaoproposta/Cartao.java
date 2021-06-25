@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.orangetalents.proposta.novaproposta.Proposta;
 
 @Entity
@@ -38,7 +39,11 @@ public class Cartao {
   @OneToOne
   private Proposta proposta;
 
-  public Cartao(String uuid, LocalDateTime emitidoEm, String titular, BigDecimal limite, Proposta proposta) {
+  @JsonProperty
+  private Boolean bloqueado = false;
+
+  public Cartao(String uuid, LocalDateTime emitidoEm, String titular, BigDecimal limite, 
+      Proposta proposta) {
     this.uuid = uuid;
     this.emitidoEm = emitidoEm;
     this.titular = titular;
@@ -68,6 +73,14 @@ public class Cartao {
 
   public Proposta getProposta() {
     return this.proposta;
+  }
+
+  public Boolean getBloqueado() {
+    return bloqueado;
+  }
+
+  public void setBloqueado(Boolean bloqueado) {
+    this.bloqueado = bloqueado;
   }
 
 }

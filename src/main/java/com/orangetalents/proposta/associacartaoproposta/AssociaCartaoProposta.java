@@ -2,8 +2,8 @@ package com.orangetalents.proposta.associacartaoproposta;
 
 import java.util.Set;
 
+import com.orangetalents.proposta.novaproposta.IPropostaRepository;
 import com.orangetalents.proposta.novaproposta.Proposta;
-import com.orangetalents.proposta.novaproposta.PropostaRepository;
 import com.orangetalents.proposta.novaproposta.Status;
 
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class AssociaCartaoProposta {
   private IConsultaCartao iConsultaCartao;
 
   @Autowired
-  private PropostaRepository repository;
+  private IPropostaRepository repository;
 
   @Scheduled(fixedDelay = 5000)
   public void executar() {

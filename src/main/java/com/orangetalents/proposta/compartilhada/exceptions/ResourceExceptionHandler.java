@@ -14,6 +14,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ResourceExceptionHandler {
 
+  @ExceptionHandler(ResourceNotFoundException.class)
+  public ResponseEntity<?> entityNotFound(ResourceNotFoundException e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+  }
+
+  @ExceptionHandler(UnprocessableEntityException.class)
+  public ResponseEntity<?> Unprocessable(UnprocessableEntityException e) {
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<StandardError> erroDeValidacao(MethodArgumentNotValidException e, HttpServletRequest request) {
     StandardError erro = new StandardError();

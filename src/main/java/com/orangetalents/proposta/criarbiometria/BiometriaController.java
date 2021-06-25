@@ -7,9 +7,8 @@ import javax.validation.Valid;
 
 import com.orangetalents.proposta.associacartaoproposta.Cartao;
 import com.orangetalents.proposta.associacartaoproposta.ICartaoRepository;
-import com.orangetalents.proposta.compartilhada.exceptions.ErroApiException;
+import com.orangetalents.proposta.compartilhada.exceptions.ResourceNotFoundException;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,11 +21,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping(value = "/api/biometrias")
 public class BiometriaController {
 
-  private IBiometriaRepository biometriaRepository;
+  private ICriaBiometriaRepository biometriaRepository;
 
   private ICartaoRepository cartaoRepository;
 
-  public BiometriaController(IBiometriaRepository biometriaRepository, ICartaoRepository cartaoRepository) {
+  public BiometriaController(ICriaBiometriaRepository biometriaRepository, ICartaoRepository cartaoRepository) {
     this.biometriaRepository = biometriaRepository;
     this.cartaoRepository = cartaoRepository;
   }
@@ -36,7 +35,7 @@ public class BiometriaController {
 
     Optional<Cartao> possivelCartao = cartaoRepository.findById(idCartao);
     if (possivelCartao.isEmpty()) {
-      throw new ErroApiException(HttpStatus.NOT_FOUND, "Cartão não encontrado");
+      throw new ResourceNotFoundException("Cartão não encontrado");
     }
     Biometria entity = request.toModel(possivelCartao.get());
     Biometria biometria = biometriaRepository.save(entity);

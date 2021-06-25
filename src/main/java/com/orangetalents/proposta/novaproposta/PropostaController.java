@@ -27,7 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class PropostaController {
 
   @Autowired
-  private PropostaRepository propostaRepositry;
+  private IPropostaRepository propostaRepositry;
 
   @Autowired
   private ConsultaRestricao consultaRestricao;
