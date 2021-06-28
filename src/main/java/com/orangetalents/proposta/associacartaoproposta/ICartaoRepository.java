@@ -12,4 +12,6 @@ public interface ICartaoRepository extends JpaRepository<Cartao, Long> {
   Optional<List<Cartao>> findByStatus(EStatusCartao bloqueioPendente);
 
   Optional<Cartao> findByNumeroCartao(String numeroCartao);
+
+  Optional<Cartao> findByUuid(String idCartao);
 }
