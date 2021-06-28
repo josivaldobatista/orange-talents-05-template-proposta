@@ -21,7 +21,7 @@ public class PropostaResponse {
     endereco = new EnderecoResponse(entity.getEndereco());
     salario = entity.getSalario();
     status = entity.getStatus();
-    cartao = entity.getCartao().getIdCartao();
+    cartao = entity.getCartao().getNumeroCartao();
   }
 
   public String getNome() {

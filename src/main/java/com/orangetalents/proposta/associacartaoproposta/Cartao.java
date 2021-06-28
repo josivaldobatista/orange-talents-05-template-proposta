@@ -2,17 +2,20 @@ package com.orangetalents.proposta.associacartaoproposta;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.orangetalents.proposta.novaproposta.Proposta;
 
 @Entity
@@ -23,8 +26,10 @@ public class Cartao {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotNull
-  private String idCartao;
+  private String uuid = UUID.randomUUID().toString();
+
+  @NotBlank
+  private String numeroCartao;
 
   @NotNull
   private LocalDateTime emitidoEm;
@@ -38,24 +43,27 @@ public class Cartao {
   @OneToOne
   private Proposta proposta;
 
-  @JsonProperty
-  private Boolean bloqueado = false;
+  @Enumerated(EnumType.STRING)
+  private EStatusCartao status = EStatusCartao.ATIVO;
 
-  public Cartao(String idCartao, LocalDateTime emitidoEm, String titular, BigDecimal limite, 
-      Proposta proposta) {
-    this.idCartao = idCartao;
+  @Deprecated
+  public Cartao() {
+  }
+
+  public Cartao(String numeroCartao, LocalDateTime emitidoEm, String titular, BigDecimal limite, Proposta proposta) {
+    this.numeroCartao = numeroCartao;
     this.emitidoEm = emitidoEm;
     this.titular = titular;
     this.limite = limite;
     this.proposta = proposta;
   }
 
-  @Deprecated
-  public Cartao() {
+  public String getUuid() {
+    return uuid;
   }
 
-  public String getIdCartao() {
-    return idCartao;
+  public String getNumeroCartao() {
+    return numeroCartao;
   }
 
   public LocalDateTime getEmitidoEm() {
@@ -74,12 +82,22 @@ public class Cartao {
     return this.proposta;
   }
 
-  public Boolean getBloqueado() {
-    return bloqueado;
+  public boolean bloqueado() {
+    return status.equals(EStatusCartao.BLOQUEADO);
   }
 
-  public void setBloqueado(Boolean bloqueado) {
-    this.bloqueado = bloqueado;
+  public void alterarStatusParaBloqueioPendente() {
+    this.status = EStatusCartao.BLOQUEIO_PENDENTE;
+  }
+
+  public void bloquear() {
+    this.status = EStatusCartao.BLOQUEADO;
+  }
+
+  @Override
+  public String toString() {
+    return "Cartao [emitidoEm=" + emitidoEm + ", id=" + id + ", limite=" + limite + ", numeroCartao=" + numeroCartao
+        + ", proposta=" + proposta + ", status=" + status + ", titular=" + titular + ", uuid=" + uuid + "]";
   }
 
 }

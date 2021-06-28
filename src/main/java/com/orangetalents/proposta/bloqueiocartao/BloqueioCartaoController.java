@@ -3,12 +3,9 @@ package com.orangetalents.proposta.bloqueiocartao;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import com.orangetalents.proposta.associacartaoproposta.Cartao;
 import com.orangetalents.proposta.associacartaoproposta.ICartaoRepository;
-import com.orangetalents.proposta.compartilhada.exceptions.ResourceNotFoundException;
-import com.orangetalents.proposta.compartilhada.exceptions.UnprocessableEntityException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,41 +17,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/bloqueios")
 public class BloqueioCartaoController {
 
-  private IBloqueioCartaoRepository bloqueioCartaoRepository;
-
+  private RealizaBloqueioCartao realizaBloqueioCartao;
   private ICartaoRepository cartaoRepository;
 
-  public BloqueioCartaoController(IBloqueioCartaoRepository bloqueioCartaoRepository, ICartaoRepository cartaoRepository) {
-    this.bloqueioCartaoRepository = bloqueioCartaoRepository;
+  public BloqueioCartaoController(RealizaBloqueioCartao realizaBloqueioCartao, ICartaoRepository cartaoRepository) {
+    this.realizaBloqueioCartao = realizaBloqueioCartao;
     this.cartaoRepository = cartaoRepository;
   }
 
-  @PostMapping(value = "/{idCartao}")
-  private ResponseEntity<?> bloqueioCartao(@Valid BloqueioCartaoRequest request,
-      @PathVariable Long idCartao, HttpServletRequest servletRequest) {
+  @PostMapping(value = "/{id}")
+  private ResponseEntity<?> bloqueioCartao(@PathVariable("id") String numeroCartao, HttpServletRequest request) {
+    Optional<Cartao> possivelCartao = cartaoRepository.findByNumeroCartao(numeroCartao);
 
-    String userAgent = servletRequest.getHeader("User-Agent");
-    String ipCliente = servletRequest.getHeader("X-FORWARDED-FOR");
-
-    if (ipCliente == null) {
-      ipCliente = servletRequest.getRemoteHost();
+    if (possivelCartao.isEmpty()) {
+      return ResponseEntity.notFound().build();
     }
 
-    Optional<Cartao> cartao = cartaoRepository.findById(idCartao);
-    if (cartao.isEmpty()) {
-      throw new ResourceNotFoundException("Cartão não encontrado");
+    Cartao cartao = possivelCartao.get();
+
+    if (cartao.bloqueado()) {
+      return ResponseEntity.unprocessableEntity().body("Este cartão já está bloqueado");
     }
 
-    if (cartao.get().getBloqueado() == true) {
-      throw new UnprocessableEntityException("Cartão já está bloqueado");
-    }
-    cartao.get().setBloqueado(true);
-
-    cartaoRepository.save(cartao.get());
-
-    BloqueioCartao bloqueioCartao = new BloqueioCartao(ipCliente, userAgent, cartao.get().getIdCartao());
-    bloqueioCartaoRepository.save(bloqueioCartao);
-
+    realizaBloqueioCartao.bloqueiaCartaoApiProposta(cartao, request.getRemoteAddr(), 
+      request.getHeader("User-Agent"));
     return ResponseEntity.ok().build();
-  } 
+  }
 }
