@@ -7,8 +7,11 @@ import javax.validation.Valid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.orangetalents.proposta.configs.MetricasParaProposta;
 import com.orangetalents.proposta.consultasolicitante.ConsultaRestricao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,10 @@ public class PropostaController {
 
   @Autowired
   private ConsultaRestricao consultaRestricao;
+
+  @Autowired
+	private MetricasParaProposta metricasParaProposta;
+	private final Logger logger = LoggerFactory.getLogger(PropostaController.class);
 
   @GetMapping(value = "/{uuid}")
   public ResponseEntity<?> buscarPropostaPorUuid(@PathVariable("uuid") String uuid) {
@@ -56,6 +63,11 @@ public class PropostaController {
     propostaRepositry.save(proposta);
 
     consultaRestricao.consulta(proposta);
+
+    logger.info(String.format("Proposta criada com sucesso para: {nome: %s, documento: %s}",
+				proposta.getNome(), proposta.getDocumento()));
+
+    metricasParaProposta.contaPropostasCriadas();
 
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
       .buildAndExpand(proposta.getId()).toUri();
