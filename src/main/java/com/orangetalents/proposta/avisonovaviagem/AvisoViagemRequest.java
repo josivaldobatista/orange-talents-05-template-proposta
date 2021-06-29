@@ -17,17 +17,17 @@ public class AvisoViagemRequest {
 
   @NotNull
   @FutureOrPresent
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-  private LocalDate terminoViagem;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  private LocalDate validoAte;
 
   @JsonCreator
-  public AvisoViagemRequest(String destino, LocalDate terminoViagem) {
+  public AvisoViagemRequest(String destino, LocalDate validoAte) {
     this.destino = destino;
-    this.terminoViagem = terminoViagem;
+    this.validoAte = validoAte;
   }
 
   public AvisoViagem toModel(Cartao cartao, String ipCliente, String userAgent) {
-    return new AvisoViagem(destino, terminoViagem, ipCliente, userAgent, cartao);
+    return new AvisoViagem(destino, validoAte, ipCliente, userAgent, cartao);
   }
 
 }

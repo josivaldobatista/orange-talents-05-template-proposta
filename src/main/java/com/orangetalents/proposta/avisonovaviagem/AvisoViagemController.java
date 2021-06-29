@@ -16,31 +16,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import feign.FeignException;
+
 @RestController
 @RequestMapping(value = "/api/aviso-viagem")
 public class AvisoViagemController {
 
   private IAvisoViagemRepository avisoViagemRepository;
   private ICartaoRepository cartaoRepository;
+  private IAvisoViagemClientFeign clientFeign;
 
-  public AvisoViagemController(IAvisoViagemRepository avisoViagemRepository, ICartaoRepository cartaoRepository) {
+  public AvisoViagemController(IAvisoViagemRepository avisoViagemRepository, ICartaoRepository cartaoRepository,
+      IAvisoViagemClientFeign clientFeign) {
     this.avisoViagemRepository = avisoViagemRepository;
     this.cartaoRepository = cartaoRepository;
+    this.clientFeign = clientFeign;
   }
 
   @PostMapping(value = "/{uuid}")
-  private ResponseEntity<?> avisoViagem(@PathVariable("uuid") UUID uuid, @RequestBody @Valid AvisoViagemRequest request,
-      HttpServletRequest servletRequest) {
-    Optional<Cartao> cartao = cartaoRepository.findByUuid(uuid.toString());
+  private ResponseEntity<AvisoViagemResponse> avisoViagem(@PathVariable("uuid") UUID id,
+      @RequestBody @Valid AvisoViagemRequest request, HttpServletRequest servletRequest) {
+    Optional<Cartao> possivelCartao = cartaoRepository.findByUuid(id.toString());
 
-    if (cartao.isEmpty()) {
+    if (possivelCartao.isEmpty()) {
       ResponseEntity.notFound().build();
     }
 
-    AvisoViagem avisoViagem = request.toModel(cartao.get(), servletRequest.getRemoteAddr(),
-        servletRequest.getHeader("User-Agent"));
-    avisoViagemRepository.save(avisoViagem);
+    Cartao cartao = possivelCartao.get();
+    AvisoViagemResponse response = clientFeign.notificaAvisoViagem(cartao.getNumeroCartao(), request);
+    try {
+      if (response.getResultado().equals("CRIADO")) {
+        AvisoViagem avisoViagem = request.toModel(cartao, servletRequest.getRemoteAddr(),
+            servletRequest.getHeader("User-Agent"));
+        avisoViagemRepository.save(avisoViagem);
+      }
 
-    return ResponseEntity.ok().build();
+    } catch (FeignException e) {
+      ResponseEntity.status(e.status()).build();
+    }
+    return ResponseEntity.ok().body(response);
+
   }
 }

@@ -30,7 +30,7 @@ public class AvisoViagem {
   private String destino;
 
   @JsonProperty
-  private LocalDate terminoViagem;
+  private LocalDate validoAte;
 
   @JsonProperty
   private LocalDateTime instante = LocalDateTime.now();
@@ -48,9 +48,9 @@ public class AvisoViagem {
   public AvisoViagem() {
   }
 
-  public AvisoViagem(String destino, LocalDate terminoViagem, String ipCliente, String userAgent, Cartao cartao) {
+  public AvisoViagem(String destino, LocalDate validoAte, String ipCliente, String userAgent, Cartao cartao) {
     this.destino = destino;
-    this.terminoViagem = terminoViagem;
+    this.validoAte = validoAte;
     this.ipCliente = ipCliente;
     this.userAgent = userAgent;
     this.cartao = cartao;
