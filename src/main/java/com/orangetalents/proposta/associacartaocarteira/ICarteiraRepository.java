@@ -1,4 +1,4 @@
-package com.orangetalents.proposta.associacartaopaypal;
+package com.orangetalents.proposta.associacartaocarteira;
 
 import java.util.Optional;
 
@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ICarteiraRepository extends JpaRepository<Carteira, Long> {
 
-  Optional<Carteira> findByCartaoAndCarteira(Cartao cartao, String carteira);
+  Optional<Carteira> findByCartaoAndEmissor(Cartao cartao, EEmissor carteira);
 
 }

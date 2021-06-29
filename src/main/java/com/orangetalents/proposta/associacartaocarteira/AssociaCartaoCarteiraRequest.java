@@ -1,12 +1,13 @@
-package com.orangetalents.proposta.associacartaopaypal;
+package com.orangetalents.proposta.associacartaocarteira;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.orangetalents.proposta.associacartaoproposta.Cartao;
 
-public class AssociaCartaoPaypalRequest {
+public class AssociaCartaoCarteiraRequest {
 
   @JsonProperty
   @NotBlank
@@ -14,16 +15,16 @@ public class AssociaCartaoPaypalRequest {
   private String email;
 
   @JsonProperty
-  @NotBlank
+  @NotNull
   private String carteira;
 
-  public AssociaCartaoPaypalRequest(String email, String carteira) {
+  public AssociaCartaoCarteiraRequest(String email, String carteira) {
     this.email = email;
     this.carteira = carteira;
   }
 
-  public Carteira toModel(Cartao cartao) {
-    return new Carteira(email, carteira, cartao);
+  public Carteira toModel(Cartao cartao, String uuid) {
+    return new Carteira(uuid, email, carteira, cartao);
   }
 
   public String getCarteira() {

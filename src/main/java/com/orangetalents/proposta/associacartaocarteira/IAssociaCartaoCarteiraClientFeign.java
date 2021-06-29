@@ -1,4 +1,4 @@
-package com.orangetalents.proposta.associacartaopaypal;
+package com.orangetalents.proposta.associacartaocarteira;
 
 import javax.validation.Valid;
 
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(url = "${host.cartao}/api/cartoes", name = "associaCartaoPaypal")
-public interface IAssociaCartaoPaypalClientFeign {
+public interface IAssociaCartaoCarteiraClientFeign {
 
   @PostMapping("/{id}/carteiras")
-  AssociaCartaoPaypalResponse associaCartaoPaypal(@PathVariable("id") String idCartao,
-      @RequestBody @Valid AssociaCartaoPaypalRequest request);
+  AssociaCartaoCarteiraResponse associaCartaoPaypal(@PathVariable("id") String idCartao,
+      @RequestBody @Valid AssociaCartaoCarteiraRequest request);
 }

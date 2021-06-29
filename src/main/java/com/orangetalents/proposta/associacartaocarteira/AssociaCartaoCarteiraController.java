@@ -1,4 +1,4 @@
-package com.orangetalents.proposta.associacartaopaypal;
+package com.orangetalents.proposta.associacartaocarteira;
 
 import java.net.URI;
 import java.util.Optional;
@@ -10,6 +10,8 @@ import com.orangetalents.proposta.associacartaoproposta.Cartao;
 import com.orangetalents.proposta.associacartaoproposta.ICartaoRepository;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,22 +23,29 @@ import feign.FeignException;
 
 @RestController
 @RequestMapping(value = "/api/cartoes")
-public class AssociaCartaoPaypalController {
+public class AssociaCartaoCarteiraController {
 
   private ICartaoRepository cartaoRepository;
-  private IAssociaCartaoPaypalClientFeign clientFeign;
+  private IAssociaCartaoCarteiraClientFeign clientFeign;
   private ICarteiraRepository carteiraRepository;
+  private ValidaEmissor validaEmissor;
 
-  public AssociaCartaoPaypalController(ICartaoRepository cartaoRepository, IAssociaCartaoPaypalClientFeign clientFeign,
-      ICarteiraRepository carteiraRepository) {
+  public AssociaCartaoCarteiraController(ICartaoRepository cartaoRepository, IAssociaCartaoCarteiraClientFeign clientFeign,
+      ICarteiraRepository carteiraRepository, ValidaEmissor validaEmissor) {
     this.cartaoRepository = cartaoRepository;
     this.clientFeign = clientFeign;
     this.carteiraRepository = carteiraRepository;
+    this.validaEmissor = validaEmissor;
   }
+
+  @InitBinder
+	public void init(WebDataBinder binder) {
+		binder.addValidators(validaEmissor);
+	}
 
   @PostMapping(value = "/{id}/carteiras")
   public ResponseEntity<?> associaCartaoPaypal(@PathVariable("id") UUID id,
-      @RequestBody @Valid AssociaCartaoPaypalRequest request) {
+      @RequestBody @Valid AssociaCartaoCarteiraRequest request) {
     Optional<Cartao> possivelCartao = cartaoRepository.findByUuid(id.toString());
 
     if (possivelCartao.isEmpty()) {
@@ -45,15 +54,16 @@ public class AssociaCartaoPaypalController {
 
     Cartao cartao = possivelCartao.get();
 
-    Optional<Carteira> possivelCarteira = carteiraRepository.findByCartaoAndCarteira(cartao, request.getCarteira());
+    Optional<Carteira> possivelCarteira = carteiraRepository.findByCartaoAndEmissor(cartao, 
+      EEmissor.valueOf(request.getCarteira()));
 
     if (possivelCarteira.isPresent()) {
       return ResponseEntity.unprocessableEntity().body("resultado: FALHA");
     }
-    AssociaCartaoPaypalResponse response = clientFeign.associaCartaoPaypal(cartao.getNumeroCartao(), request);
+    AssociaCartaoCarteiraResponse response = clientFeign.associaCartaoPaypal(cartao.getNumeroCartao(), request);
 
     try {
-      Carteira carteira = request.toModel(cartao);
+      Carteira carteira = request.toModel(cartao, response.getId());
       carteiraRepository.save(carteira);
 
     } catch (FeignException e) {

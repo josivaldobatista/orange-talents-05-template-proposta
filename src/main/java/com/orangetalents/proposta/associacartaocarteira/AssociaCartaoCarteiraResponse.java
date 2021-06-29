@@ -1,6 +1,6 @@
-package com.orangetalents.proposta.associacartaopaypal;
+package com.orangetalents.proposta.associacartaocarteira;
 
-public class AssociaCartaoPaypalResponse {
+public class AssociaCartaoCarteiraResponse {
 
   private String resultado;
   private String id;

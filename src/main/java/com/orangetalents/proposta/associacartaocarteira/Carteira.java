@@ -1,8 +1,10 @@
-package com.orangetalents.proposta.associacartaopaypal;
+package com.orangetalents.proposta.associacartaocarteira;
 
 import java.util.UUID;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,6 +12,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.orangetalents.proposta.associacartaoproposta.Cartao;
@@ -30,8 +33,9 @@ public class Carteira {
   private String email;
 
   @JsonProperty
-  @NotBlank
-  private String carteira;
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  private EEmissor emissor;
 
   @OneToOne
   private Cartao cartao;
@@ -40,9 +44,10 @@ public class Carteira {
   public Carteira() {
   }
 
-  public Carteira(String email, String carteira, Cartao cartao) {
+  public Carteira(String uuid, String email, String emissor, Cartao cartao) {
+    this.uuid = uuid;
     this.email = email;
-    this.carteira = carteira;
+    this.emissor = EEmissor.valueOf(emissor);
     this.cartao = cartao;
   }
 
