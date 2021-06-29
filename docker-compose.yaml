@@ -37,7 +37,7 @@ services:
   postgres-proposta:
     image: 'postgres:alpine'
     volumes:
-      - postgres-volume:/var/lib/postgresql/data
+      - postgres-proposta-volume:/var/lib/postgresql/data
     ports:
       - 5431:5432
     environment:
@@ -60,7 +60,6 @@ services:
       KEYCLOAK_JWKS_URI: http://keycloak:8080/auth/realms/nosso-cartao/protocol/openid-connect/certs
     depends_on:
       - "postgres-proposta"
-      - "keycloak"
       - "analise"
       - "contas"
       - "vault"
@@ -171,3 +170,4 @@ volumes:
   grafana-volume:
   prometheus-volume:
   postgres-volume:
+  postgres-proposta-volume:
