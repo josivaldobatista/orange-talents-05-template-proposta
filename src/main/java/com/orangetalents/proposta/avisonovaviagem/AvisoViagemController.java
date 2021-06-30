@@ -17,21 +17,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import feign.FeignException;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 
 @RestController
 @RequestMapping(value = "/api/aviso-viagem")
 public class AvisoViagemController {
 
+  private final Tracer tracer;
+
   private IAvisoViagemRepository avisoViagemRepository;
   private ICartaoRepository cartaoRepository;
   private IAvisoViagemClientFeign clientFeign;
 
-  public AvisoViagemController(IAvisoViagemRepository avisoViagemRepository, ICartaoRepository cartaoRepository,
-      IAvisoViagemClientFeign clientFeign) {
+  public AvisoViagemController(Tracer tracer, IAvisoViagemRepository avisoViagemRepository, ICartaoRepository cartaoRepository, IAvisoViagemClientFeign clientFeign) {
+    this.tracer = tracer;
     this.avisoViagemRepository = avisoViagemRepository;
     this.cartaoRepository = cartaoRepository;
     this.clientFeign = clientFeign;
   }
+
 
   @PostMapping(value = "/{uuid}")
   private ResponseEntity<AvisoViagemResponse> avisoViagem(@PathVariable("uuid") UUID id,
@@ -49,6 +54,9 @@ public class AvisoViagemController {
         AvisoViagem avisoViagem = request.toModel(cartao, servletRequest.getRemoteAddr(),
             servletRequest.getHeader("User-Agent"));
         avisoViagemRepository.save(avisoViagem);
+
+        Span activeSpan = tracer.activeSpan();
+        activeSpan.setTag("cartao.numeroCartao", cartao.getNumeroCartao());
       }
 
     } catch (FeignException e) {

@@ -60,7 +60,7 @@ public class AssociaCartaoCarteiraController {
     if (possivelCarteira.isPresent()) {
       return ResponseEntity.unprocessableEntity().body("resultado: FALHA");
     }
-    AssociaCartaoCarteiraResponse response = clientFeign.associaCartaoPaypal(cartao.getNumeroCartao(), request);
+    AssociaCartaoCarteiraResponse response = clientFeign.associaCartaoCarteira(cartao.getNumeroCartao(), request);
 
     try {
       Carteira carteira = request.toModel(cartao, response.getId());

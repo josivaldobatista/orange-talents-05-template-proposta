@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(url = "${host.cartao}/api/cartoes", name = "associaCartaoPaypal")
+@FeignClient(url = "${host.cartao}/api/cartoes", name = "associaCartaoCarteira")
 public interface IAssociaCartaoCarteiraClientFeign {
 
   @PostMapping("/{id}/carteiras")
-  AssociaCartaoCarteiraResponse associaCartaoPaypal(@PathVariable("id") String idCartao,
+  AssociaCartaoCarteiraResponse associaCartaoCarteira(@PathVariable("id") String idCartao,
       @RequestBody @Valid AssociaCartaoCarteiraRequest request);
 }
