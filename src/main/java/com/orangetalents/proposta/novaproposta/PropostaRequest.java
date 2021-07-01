@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import com.orangetalents.proposta.compartilhada.utils.EncryptEDecrypt;
 import com.orangetalents.proposta.compartilhada.validacoes.CpfOrCnpjValue;
 import com.orangetalents.proposta.compartilhada.validacoes.UniqueValue;
 import com.orangetalents.proposta.novaproposta.endereco.EnderecoRequest;
@@ -41,7 +42,8 @@ public class PropostaRequest {
     this.salario = salario;
   }
   
-  public Proposta toModel() {
+  public Proposta toModel(EncryptEDecrypt encryptEDecrypt) {
+    this.documento = encryptEDecrypt.encrypt(documento);
     return new Proposta(nome, email, documento, endereco.toModel(), salario);
   }
 

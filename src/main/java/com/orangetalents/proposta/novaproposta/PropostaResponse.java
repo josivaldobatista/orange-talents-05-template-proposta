@@ -2,6 +2,7 @@ package com.orangetalents.proposta.novaproposta;
 
 import java.math.BigDecimal;
 
+import com.orangetalents.proposta.compartilhada.utils.EncryptEDecrypt;
 import com.orangetalents.proposta.novaproposta.endereco.EnderecoResponse;
 
 public class PropostaResponse {
@@ -14,10 +15,10 @@ public class PropostaResponse {
   private Status status;
   private String cartao;
 
-  public PropostaResponse(Proposta entity) {
+  public PropostaResponse(Proposta entity, EncryptEDecrypt encryptEDecrypt) {
     nome = entity.getNome();
     email = entity.getEmail();
-    documento = entity.getDocumento();
+    documento = encryptEDecrypt.decrypt(entity.getDocumento());
     endereco = new EnderecoResponse(entity.getEndereco());
     salario = entity.getSalario();
     status = entity.getStatus();

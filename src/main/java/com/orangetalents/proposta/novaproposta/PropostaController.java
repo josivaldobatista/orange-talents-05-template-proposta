@@ -7,11 +7,13 @@ import javax.validation.Valid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.orangetalents.proposta.compartilhada.utils.EncryptEDecrypt;
 import com.orangetalents.proposta.configs.MetricasParaProposta;
 import com.orangetalents.proposta.consultasolicitante.ConsultaRestricao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,18 +35,21 @@ public class PropostaController {
 
   private final Tracer tracer;
 
+  private EncryptEDecrypt encryptEDecrypt;
   private IPropostaRepository propostaRepositry;
   private ConsultaRestricao consultaRestricao;
   private MetricasParaProposta metricasParaProposta;
 
   private final Logger logger = LoggerFactory.getLogger(PropostaController.class);
 
+  @Autowired
   public PropostaController(Tracer tracer, IPropostaRepository propostaRepositry, ConsultaRestricao consultaRestricao,
-      MetricasParaProposta metricasParaProposta) {
+      MetricasParaProposta metricasParaProposta, EncryptEDecrypt encryptEDecrypt) {
     this.tracer = tracer;
     this.propostaRepositry = propostaRepositry;
     this.consultaRestricao = consultaRestricao;
     this.metricasParaProposta = metricasParaProposta;
+    this.encryptEDecrypt = encryptEDecrypt;
   }
 
   @GetMapping(value = "/{uuid}")
@@ -54,7 +59,7 @@ public class PropostaController {
       return ResponseEntity.notFound().build();
     }
     Proposta proposta = entity.get();
-    PropostaResponse response = new PropostaResponse(proposta);
+    PropostaResponse response = new PropostaResponse(proposta, encryptEDecrypt);
     return ResponseEntity.ok().body(response);
   }
 
@@ -63,14 +68,16 @@ public class PropostaController {
   public ResponseEntity<?> novaProposta(@RequestBody @Valid PropostaRequest request)
       throws JsonMappingException, JsonProcessingException {
 
-    Optional<Proposta> possivelProposta = propostaRepositry.findByDocumento(request.getDocumento());
+    String documentoEncrypteRequest = encryptEDecrypt.encrypt(request.getDocumento());
+    Optional<Proposta> possivelProposta = propostaRepositry.findByDocumento(documentoEncrypteRequest);
+
     if (possivelProposta.isPresent()) {
       throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Documento informado já possui uma proposta");
     }
-    
-    Proposta proposta = request.toModel();
+
+    Proposta proposta = request.toModel(encryptEDecrypt);
     propostaRepositry.save(proposta);
-    
+
     // Testes de OpenTracer
     Span activeSpan = tracer.activeSpan();
     activeSpan.setTag("proposta.email", proposta.getEmail());
